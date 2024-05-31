@@ -1,0 +1,42 @@
+# Node.js
+node_modules/
+dist/
+dist_electron/
+!.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vue.js
+.DS_Store
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# npm package lock file
+package-lock.json
+yarn.lock
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+
+# Editor directories and files
+*.swp
+*~
+.project
+.idea/
+.vscode/
+*.code-workspace
+
+# MacOS
+.DS_Store
