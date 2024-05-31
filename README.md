@@ -82,66 +82,70 @@ Les modifications apportées sont sauvegardées et exportées via l'API Python.
 
 # Plan d'action
 
-Étape 1 : Préparation de l'environnement de développement
+             - Étape 1 : Préparation de l'environnement de développement
+
 Installer les outils nécessaires :
+      Node.js et npm : pour gérer les dépendances de l'application Electron et Vue.js.
+      Python : pour le développement backend et le traitement audio.
+      Un éditeur de code (VSCode, PyCharm, etc.)
 
-Node.js et npm : pour gérer les dépendances de l'application Electron et Vue.js.
-Python : pour le développement backend et le traitement audio.
-Un éditeur de code (VSCode, PyCharm, etc.)
 Configurer l'environnement de développement :
+      Créer un nouveau projet Electron avec Vue.js.
+      Configurer un environnement virtuel pour Python et installer les bibliothèques nécessaires (pyaudio, flask, sqlalchemy, pydub, etc.)
 
-Créer un nouveau projet Electron avec Vue.js.
-Configurer un environnement virtuel pour Python et installer les bibliothèques nécessaires (pyaudio, flask, sqlalchemy, pydub, etc.)
-Étape 2 : Développement de l'interface utilisateur (Electron + Vue.js)
+             - Étape 2 : Développement de l'interface utilisateur (Electron + Vue.js)
+
 Créer la structure de base de l'application Electron :
+      Initialiser un projet Electron.
+      Ajouter Vue.js au projet.
 
-Initialiser un projet Electron.
-Ajouter Vue.js au projet.
 Développer la page d'accueil :
+      Créer un composant Vue pour afficher la liste des samples.
+      Ajouter des boutons pour lire, renommer et supprimer les samples.
 
-Créer un composant Vue pour afficher la liste des samples.
-Ajouter des boutons pour lire, renommer et supprimer les samples.
 Développer l'interface d'enregistrement :
+      Ajouter un bouton pour démarrer/arrêter l'enregistrement.
+      Gérer l'état de l'enregistrement et afficher les messages de statut.
 
-Ajouter un bouton pour démarrer/arrêter l'enregistrement.
-Gérer l'état de l'enregistrement et afficher les messages de statut.
 Développer l'éditeur de samples :
+      Créer un composant Vue pour l'éditeur de samples.
+      Intégrer une bibliothèque pour afficher la waveform (ex. WaveSurfer.js).
+      Ajouter des outils pour couper, copier, coller, et appliquer des effets.
 
-Créer un composant Vue pour l'éditeur de samples.
-Intégrer une bibliothèque pour afficher la waveform (ex. WaveSurfer.js).
-Ajouter des outils pour couper, copier, coller, et appliquer des effets.
-Étape 3 : Développement du backend (Python)
+            - Étape 3 : Développement du backend (Python)
+
 Service d'enregistrement audio :
+      Écrire un script Python pour capturer l'audio et le sauvegarder sur le disque.
+      Tester le script en ligne de commande.
 
-Écrire un script Python pour capturer l'audio et le sauvegarder sur le disque.
-Tester le script en ligne de commande.
 API REST pour l'enregistrement :
+      Créer une API Flask/FastAPI avec des endpoints pour démarrer et arrêter l'enregistrement.
+      Intégrer le script d'enregistrement audio dans l'API.
 
-Créer une API Flask/FastAPI avec des endpoints pour démarrer et arrêter l'enregistrement.
-Intégrer le script d'enregistrement audio dans l'API.
 Gestion de la base de données :
+      Configurer une base de données SQLite/PostgreSQL/MySQL.
+      Créer des modèles de données pour les samples (nom, chemin du fichier, métadonnées).
+      Écrire des endpoints API pour CRUD (Create, Read, Update, Delete) des samples.
 
-Configurer une base de données SQLite/PostgreSQL/MySQL.
-Créer des modèles de données pour les samples (nom, chemin du fichier, métadonnées).
-Écrire des endpoints API pour CRUD (Create, Read, Update, Delete) des samples.
 Traitement et édition des samples :
+      Implémenter des fonctions pour analyser la waveform (avec pydub ou librosa).
+      Ajouter des endpoints API pour appliquer des modifications aux samples (couper, coller, ajouter des effets).
+      Tester les fonctions de traitement en ligne de commande.
 
-Implémenter des fonctions pour analyser la waveform (avec pydub ou librosa).
-Ajouter des endpoints API pour appliquer des modifications aux samples (couper, coller, ajouter des effets).
-Tester les fonctions de traitement en ligne de commande.
-Étape 4 : Intégration du frontend et du backend
+            - Étape 4 : Intégration du frontend et du backend
+
 Intégration de l'enregistrement :
+      Connecter le bouton d'enregistrement de Vue.js à l'API Python pour démarrer/arrêter l'enregistrement.
+      Afficher les messages de statut et les erreurs éventuelles dans l'interface.
 
-Connecter le bouton d'enregistrement de Vue.js à l'API Python pour démarrer/arrêter l'enregistrement.
-Afficher les messages de statut et les erreurs éventuelles dans l'interface.
 Affichage des samples :
+      Récupérer les données des samples depuis l'API et les afficher dans la page d'accueil.
+      Ajouter des fonctionnalités pour renommer et supprimer les samples via l'API.
 
-Récupérer les données des samples depuis l'API et les afficher dans la page d'accueil.
-Ajouter des fonctionnalités pour renommer et supprimer les samples via l'API.
 Éditeur de samples :
+      Charger la waveform du sample sélectionné en utilisant les données récupérées depuis l'API.
+      Envoyer les modifications apportées au sample à l'API pour traitement et sauvegarde.
 
-Charger la waveform du sample sélectionné en utilisant les données récupérées depuis l'API.
-Envoyer les modifications apportées au sample à l'API pour traitement et sauvegarde.
 Étape 5 : Tests et validation
 Tests unitaires et d'intégration :
 
