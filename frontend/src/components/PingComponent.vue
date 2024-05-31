@@ -2,21 +2,25 @@
     <div>
       <button @click="sendPing">Test Ping</button>
     </div>
-  </template>
+</template>
   
-  <script>
+<script>
+
+  import axios from 'axios'
+
   export default {
     name: 'PingComponent',
     methods: {
       async sendPing() {
-        try {
-          const response = await fetch('http://localhost:5000/ping');
-          const text = await response.text();
-          console.log(text);  // Affiche "pong" dans la console
-        } catch (error) {
-          console.error('Error:', error);
-        }
+        const path = 'http://localhost:5000/ping'
+        axios.get(path)
+        .then ((res) => {
+          console.log(res.data)
+        })
+        .catch ((err) => {
+          console.error(err)
+        })
       }
     }
   }
-  </script>
+</script>

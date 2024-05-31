@@ -21,10 +21,10 @@
 </template>
 
 <script>
-import PingComponent from './PingComponent.vue'
+import PingComponent from '../components/PingComponent.vue'
 
 export default {
-  name: 'HelloWorld',
+  name: 'HomeComponent',
   components: {
     PingComponent
   },
