@@ -1,19 +1,30 @@
-from flask import Flask, jsonify
+from flask import Flask
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+import os
+from models import db, Recorder
+from routes.main_routes import main_bp
+from routes.sample_routes import sample_bp
+from routes.record_routes import record_bp
 
 app = Flask(__name__)
-app.config.from_object(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///samples.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
 
-CORS(app, resources={r"/*":{'origins':"http://localhost:8080"}})
+recorder = Recorder()
 
+CORS(app, resources={r"/*": {'origins': "http://localhost:8080"}})
 
-@app.route('/')
-def Welcome():
-    return "Connected to python server"
+# Enregistrer les Blueprints
+app.register_blueprint(main_bp)
+app.register_blueprint(sample_bp)
+app.register_blueprint(record_bp)
 
-@app.route('/ping', methods=['GET'])
-def ping():
-    return "pong pong", 200
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
     app.run(debug=True)
