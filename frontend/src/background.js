@@ -1,9 +1,14 @@
+// backend.js
+
 'use strict'
 
-import { app, protocol, BrowserWindow, dialog } from 'electron'
+import { app, protocol, BrowserWindow, dialog, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
+import path from 'path';
+
+const __dirname = path.resolve(path.dirname(''));
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -17,11 +22,12 @@ async function createWindow() {
     height: 600,
     autoHideMenuBar: true,
     webPreferences: {
-      
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
+      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+      enableRemoteModule: true,
+      preload: path.join(__dirname, 'src/preload.js'),
     }
   })
 
@@ -53,6 +59,17 @@ async function createWindow() {
     recordWidgetWindow.loadURL('app://./index.html#/record')
   }
 }
+
+ipcMain.on('select-folder', (event, message) => {
+  console.log('Message reçu depuis SelectFolderPath:', message);
+    const result = dialog.showOpenDialog({ properties: ['openDirectory', 'multiSelections'] })
+    .then(result => {
+      if (!result.canceled) {
+        event.sender.send('select-folder', result.filePaths[0]);
+      }
+      console.log(result)
+    })
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, g
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -21,6 +21,10 @@ CORS(app, resources={r"/*": {'origins': "http://localhost:8080"}})
 app.register_blueprint(main_bp)
 app.register_blueprint(sample_bp)
 app.register_blueprint(record_bp)
+
+@app.before_request
+def before_request():
+    g.recorder = recorder
 
 
 if __name__ == '__main__':

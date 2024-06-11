@@ -4,6 +4,8 @@ import soundcard as sc
 from datetime import datetime
 import threading
 import pickle
+from models import db, Sample
+from flask import current_app
 
 
 
@@ -44,6 +46,10 @@ class Recorder:
         allrec = np.vstack(frames)
         sf.write(file=OUTPUT_FILE_NAME, data=allrec, samplerate=SAMPLE_RATE)
         print('Audio saved in %s.', OUTPUT_FILE_NAME)
+        with current_app.app_context():
+            new_sample = Sample(OUTPUT_FILE_NAME)
+            db.session.add(new_sample)
+            db.session.commit()
 
     def create_file_name(self):
         maintenant = datetime.now()
@@ -61,11 +67,14 @@ class Recorder:
     def load_folder_path(self):
         try:
             with open("folder_path.pkl", "rb") as file:
+                print("load_folder_path(): Selecting folder path")
                 return pickle.load(file)
         except FileNotFoundError:
+            print("load_folder_path(): No folder selected")
             return None
 
     def set_folder_path(self, folder_path: str):
+        print("method: set_folder_path()")
         self.selected_folder_path = folder_path
         self.save_folder_path()
 

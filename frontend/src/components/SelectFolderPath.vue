@@ -1,6 +1,6 @@
 <template>
     <div>
-      <input type="file" ref="directoryInput" style="display: none" webkitdirectory @change="handleDirectorySelection" />
+      <input type="file" ref="directoryInput" style="display: none" @change="handleDirectorySelection" />
       <v-btn icon @click="selectDirectory">
         <v-icon>mdi-folder</v-icon>
       </v-btn>
@@ -9,29 +9,29 @@
   
   <script>
   import axios from 'axios';
+  // const { ipcRenderer } = require('electron')
+  
   
   export default {
     name: 'SelectDirectoryPath',
     methods: {
         selectDirectory() {
-
+          console.log("select-folder-path")
+          window.ipcRenderer.send('select-folder', 'Message simple depuis SelectFolderPath');
         },
-        handleFileUpload(event) {
-            if (event) {
-                const dataToSend = "caca";
-
-                axios.post('http://127.0.0.1:5000/upload', dataToSend)
-                .then(response => {
-                    console.log('File uploaded successfully');
-                    console.log(response)
-
-                    this.$emit('file-uploaded');
-                })
-                .catch(error => {
-                    console.error('Error uploading file', error);
-                });
-            }
-        }
+    },
+    mounted() {
+      window.ipcRenderer.receive('select-folder', (filePaths) => {
+      console.log('Dossiers sélectionnés :', filePaths);
+      axios.post('http://127.0.0.1:5000/selectSaveFolder', filePaths)
+              .then(response => {
+                  console.log('Folder selected successfully');
+                  console.log(response)
+              })
+              .catch(error => {
+                  console.error('Error selecting folder', error);
+              });
+      });
     }
   };
   </script>

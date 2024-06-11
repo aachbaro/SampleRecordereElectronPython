@@ -17,6 +17,7 @@
     "@mdi/font": "5.9.55",
     "axios": "^1.7.2",
     "core-js": "^3.8.3",
+    "path-browserify": "^1.0.1",
     "roboto-fontface": "*",
     "vue": "^3.2.13",
     "vue-router": "^4.3.2",
