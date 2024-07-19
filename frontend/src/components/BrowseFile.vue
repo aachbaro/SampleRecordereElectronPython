@@ -20,7 +20,7 @@
         const file = event.target.files[0];
         if (file) {
             const dataToSend = file.path;
-
+            this.$emit('directorySelected', dataToSend);
             axios.post('http://127.0.0.1:5000/upload', dataToSend)
             .then(response => {
                 console.log('File uploaded successfully');

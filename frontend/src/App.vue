@@ -2,12 +2,7 @@
 
 <template>
   <v-app>
-    <v-main>
-      <!-- <v-row> -->
-        <!-- <router-link to="/Home">HomeComponent</router-link> -->
-        <router-view />
-      <!-- </v-row> -->
-    </v-main>
+        <router-view class="routerView"></router-view>
   </v-app>
 </template>
 
@@ -22,15 +17,25 @@ export default {
 }
 </script>
 
-<style scoped>
-.v-main {
-    /* overflow: hidden; */
-    background-color: transparent !important;
+<style>
+
+/* .v-app {
+  background-color: ;
+} */
+
+/* .v-main {
+    overflow: hidden;
+    background-color: transparent;
     scrollbar-width: none;
     overflow-y: hidden;
-}
+} */
 
 ::-webkit-scrollbar {
   width: 0px !important
 }
+
+.routerView {
+  background-color: black;
+}
+
 </style>

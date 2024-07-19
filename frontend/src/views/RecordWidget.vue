@@ -1,61 +1,128 @@
 <template>
-    <v-container>
-        <div
-          @mouseenter="expandWindow"
-          @mouseleave="shrinkWindow">
-          <v-btn icon size="20" @click="startRecording">
-            <v-icon size="18">mdi-microphone</v-icon>
-          </v-btn>
-        </div>
-    </v-container>
-  </template>
-  
-  <script>
-  import axios from 'axios'
-  export default {
-    name: 'RecordWidget',
-    data() {
-        return {
-          originalWidth: window.outerWidth, // Stocke la largeur originale de la fenêtre
-          originalHeight: window.outerHeight // Stocke la hauteur originale de la fenêtre
-      };
-    },
-    methods: {
-      startRecording() {
-        console.log('Recording button pressed');
-        axios.post('http://127.0.0.1:5000/recordButtonClicked')
-            .then(response => {
-                console.log('File uploaded successfully');
-                console.log(response)
+  <div class="widget">
+      <div class="btnWrap">
+        <v-btn
+          icon
+          size="20"
+          :class="{ recording: isRecording }"
+          @click="startRecording"
+        >
+          <v-icon size="16">mdi-microphone</v-icon>
+        </v-btn>
 
-                this.$emit('file-uploaded');
-            })
-            .catch(error => {
-                console.error('Error uploading file', error);
-            });
-      },
-      expandWindow() {
+        <v-btn icon size="20" class="folder-button">
+          <v-icon size="16">mdi-folder</v-icon>
+        </v-btn>
+      </div>
+      <div class="dragzone" :class="{ hidden: hover }">
+        <v-icon size="23">mdi-drag-vertical</v-icon>
+      </div>
+    </div>
+</template>
 
-      // const newWidth = 170;
-      window.resizeTo(100, 0);
+<script>
+import axios from "axios";
+
+export default {
+  name: "RecordWidget",
+  data() {
+    return {
+      isRecording: false
+    };
+  },
+  methods: {
+    startRecording() {
+      console.log("Recording button pressed");
+      axios
+        .post("http://127.0.0.1:5000/recordButtonClicked")
+        .then((response) => {
+          console.log("Record Button clicked");
+          this.isRecording = response.data;
+          this.$emit("file-uploaded");
+        })
+        .catch((error) => {
+          console.error("Error managing record state", error);
+        });
     },
-    shrinkWindow() {
-      // Ajustez la largeur de votre fenêtre à sa taille originale
-      // par exemple, réduisez de 100 pixels
-      // const newWidth = 70;
-      window.resizeTo(50, 0);
-    }
-    }
-  }
-  </script>
+  },
+};
+</script>
 
 <style scoped>
-  
-  .v-container {
-    background-color: transparent !important; /* Ensure the background is transparent */
-    width: 100%;
-    padding: 5px;
-    margin-right: auto;
-    margin-left: auto;
+
+.widget {
+  display:flex;
+  align-content: center;
+  align-items: center;
+  justify-items: center;
+  /* justify-content: center */
 }
+
+.btnWrap {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  /* justify-items: center; */
+  /* justify-content: center; */
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: solid;
+  border-width: 1px;
+  border-color: white;
+  opacity: 70%;
+  transition: width 0.5s ease-in-out;
+  overflow: hidden;
+  /* outline: 1px solid red; */
+}
+
+.btnWrap:hover {
+  width: 72px;
+}
+
+.btnWrap:hover + .dragzone {
+  opacity: 0;
+}
+
+.btnWrap:hover .folder-button {
+  opacity: 100%;
+}
+
+.btnWrap button {
+  margin: 7px;
+  background-color: white !important;
+}
+
+.btnWrap button:hover {
+  background-color: #aaa !important;
+}
+
+.recording {
+  color: red !important;
+}
+
+.btnWrap .folder-button {
+  opacity: 0%;
+  transition: opacity 1s ease-in;
+}
+
+.dragzone {
+  display:flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+  width: 20px;
+  height: 40px;
+  /* background-color: #aaa !important; */
+  color: white;
+  -webkit-app-region: drag;
+  opacity: 50%;
+  transition: opacity 1s;
+}
+
+.dragzone.hidden {
+  opacity: 0;
+}
+
 </style>

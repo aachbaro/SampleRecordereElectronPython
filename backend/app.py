@@ -3,7 +3,8 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
-from models import db, Recorder
+from models import db, Recorder, SampleLibrary
+from models.SampleLibrary import SampleBank
 from routes.main_routes import main_bp
 from routes.sample_routes import sample_bp
 from routes.record_routes import record_bp
@@ -14,6 +15,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 recorder = Recorder()
+sampleBank = SampleBank()
 
 CORS(app, resources={r"/*": {'origins': "http://localhost:8080"}})
 
@@ -25,6 +27,7 @@ app.register_blueprint(record_bp)
 @app.before_request
 def before_request():
     g.recorder = recorder
+    g.sampleBank = sampleBank
 
 
 if __name__ == '__main__':

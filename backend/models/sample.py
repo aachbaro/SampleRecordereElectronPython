@@ -19,6 +19,7 @@ class Sample(db.Model):
         self.name = self.extract_name_from_path()
         # self.creation_date = self.get_creation_date()
         self.frame_list, self.duration = self.extract_data_from_wav()
+        self.is_directory = False
 
     def extract_name_from_path(self) -> str:
         """Extracts the name of the sample from its path."""
@@ -42,7 +43,7 @@ class Sample(db.Model):
     #     creation_datetime = datetime.fromtimestamp(creation_timestamp)
     #     return creation_datetime.strftime("%y/%m/%d-%HH%MM")
 
-    def __str__(self):
+    def __repr__(self):
         return f"name: {self.name}\nduration: {self.duration}"
     
     def to_dict(self):
@@ -51,6 +52,7 @@ class Sample(db.Model):
             'path': self.path,
             'name': self.name,
             'duration': self.duration,
-            'frame_list': base64.b64encode(self.frame_list).decode('utf-8')
+            'is_directory': False
+            # 'frame_list': base64.b64encode(self.frame_list).decode('utf-8')
             # 'frame_list': self.frame_list,
         }

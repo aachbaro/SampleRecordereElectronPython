@@ -43,13 +43,16 @@ class Recorder:
                     frames.append(data)
         except KeyboardInterrupt:
             pass
-        allrec = np.vstack(frames)
-        sf.write(file=OUTPUT_FILE_NAME, data=allrec, samplerate=SAMPLE_RATE)
-        print('Audio saved in %s.', OUTPUT_FILE_NAME)
-        with current_app.app_context():
-            new_sample = Sample(OUTPUT_FILE_NAME)
-            db.session.add(new_sample)
-            db.session.commit()
+        try:
+            allrec = np.vstack(frames)
+            sf.write(file=OUTPUT_FILE_NAME, data=allrec, samplerate=SAMPLE_RATE)
+            print('Audio saved in %s.', OUTPUT_FILE_NAME)
+        except Exception as error:
+            print("Error: no audio recorded")
+        # with current_app.app_context():
+        #     new_sample = Sample(OUTPUT_FILE_NAME)
+        #     db.session.add(new_sample)
+        #     db.session.commit()
 
     def create_file_name(self):
         maintenant = datetime.now()
@@ -77,6 +80,9 @@ class Recorder:
         print("method: set_folder_path()")
         self.selected_folder_path = folder_path
         self.save_folder_path()
+
+    def get_folder_path(self):
+        return self.selected_folder_path
 
     def get_is_recording(self):
         return self.is_recording

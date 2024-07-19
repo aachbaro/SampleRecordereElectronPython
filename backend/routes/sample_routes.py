@@ -1,5 +1,8 @@
-from flask import Blueprint, jsonify, request
+# backend/routes/sample_route.py
+
+from flask import Blueprint, jsonify, request, g, current_app
 from models import db, Sample
+from models.SampleLibrary import SampleBank
 
 sample_bp = Blueprint('sample_bp', __name__)
 
@@ -19,8 +22,11 @@ def upload_file():
 @sample_bp.route('/getSampleLibrary', methods=['GET'])
 def sendSampleLibrary():
     try:
-        samples = Sample.query.all()
-        sample_list = [sample.to_dict() for sample in samples]
+        # samples = Sample.query.all()
+        # sample_list = [sample.to_dict() for sample in samples]
+        print("here")
+        sample_list = g.sampleBank.to_dict()
+        print(sample_list)
         return jsonify(sample_list)
     except Exception as error:
         return str(error), 500

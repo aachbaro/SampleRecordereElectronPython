@@ -30,6 +30,7 @@
     methods: {
       async fetchSamples() {
         try {
+          console.log("SampleLibfetchSample")
           const response = await axios.get('http://localhost:5000/getSampleLibrary');
           this.samples = response.data.reverse();
         } catch (error) {

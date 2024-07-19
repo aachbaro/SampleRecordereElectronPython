@@ -13,7 +13,7 @@
   
   
   export default {
-    name: 'SelectDirectoryPath',
+    name: 'SelectFolderPath',
     methods: {
         selectDirectory() {
           console.log("select-folder-path")
@@ -22,7 +22,9 @@
     },
     mounted() {
       window.ipcRenderer.receive('select-folder', (filePaths) => {
-      console.log('Dossiers sélectionnés :', filePaths);
+        console.log('Dossiers sélectionnés :', filePaths);
+        this.$emit('directorySelected', filePaths);
+
       axios.post('http://127.0.0.1:5000/selectSaveFolder', filePaths)
               .then(response => {
                   console.log('Folder selected successfully');
