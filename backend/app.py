@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 from models import db, Recorder, SampleLibrary
 from models.SampleLibrary import SampleBank
+from models.User import User
 from routes.main_routes import main_bp
 from routes.sample_routes import sample_bp
 from routes.record_routes import record_bp
@@ -14,8 +15,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///samples.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
-recorder = Recorder()
-sampleBank = SampleBank()
+# recorder = Recorder()
+# sampleBank = SampleBank()
+user = User()
 
 CORS(app, resources={r"/*": {'origins': "http://localhost:8080"}})
 
@@ -26,8 +28,7 @@ app.register_blueprint(record_bp)
 
 @app.before_request
 def before_request():
-    g.recorder = recorder
-    g.sampleBank = sampleBank
+    g.user = user
 
 
 if __name__ == '__main__':

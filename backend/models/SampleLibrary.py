@@ -26,8 +26,9 @@ class Folder:
         }
 
 class SampleBank:
-    def __init__(self, root_path=None):
+    def __init__(self, root_path=None, id=0):
         print("init sample bank")
+        self.id = id
         if (root_path):
             self.root_path = Path(root_path)
         else:
@@ -47,6 +48,9 @@ class SampleBank:
     
     def set_root_path(self, new_root_path: str):
         self.root_path = new_root_path
+
+    def get_root_path(self):
+        return self.root_path
 
     def load_folder_path(self):
         try:

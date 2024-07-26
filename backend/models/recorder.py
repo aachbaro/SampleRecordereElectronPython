@@ -16,9 +16,9 @@ class Recorder:
         self.mic = None
         self.is_recording = False
         self.record_thread = None
-        self.selected_folder_path = self.load_folder_path()
 
-    def record_button_clicked(self):
+    def record_button_clicked(self, selected_library):
+        self.selected_folder_path = selected_library
         if self.is_recording:
             self.is_recording = False
         else:
@@ -44,7 +44,9 @@ class Recorder:
         except KeyboardInterrupt:
             pass
         try:
+            print("wtf")
             allrec = np.vstack(frames)
+            print(OUTPUT_FILE_NAME)
             sf.write(file=OUTPUT_FILE_NAME, data=allrec, samplerate=SAMPLE_RATE)
             print('Audio saved in %s.', OUTPUT_FILE_NAME)
         except Exception as error:
@@ -63,26 +65,26 @@ class Recorder:
             return f"{format_date_heure}.wav"
 
 
-    def save_folder_path(self):
-        with open("folder_path.pkl", "wb") as file:
-            pickle.dump(self.selected_folder_path, file)
+    # def save_folder_path(self):
+    #     with open("folder_path.pkl", "wb") as file:
+    #         pickle.dump(self.selected_folder_path, file)
 
-    def load_folder_path(self):
-        try:
-            with open("folder_path.pkl", "rb") as file:
-                print("load_folder_path(): Selecting folder path")
-                return pickle.load(file)
-        except FileNotFoundError:
-            print("load_folder_path(): No folder selected")
-            return None
+    # def load_folder_path(self):
+    #     try:
+    #         with open("folder_path.pkl", "rb") as file:
+    #             print("load_folder_path(): Selecting folder path")
+    #             return pickle.load(file)
+    #     except FileNotFoundError:
+    #         print("load_folder_path(): No folder selected")
+    #         return None
 
-    def set_folder_path(self, folder_path: str):
-        print("method: set_folder_path()")
-        self.selected_folder_path = folder_path
-        self.save_folder_path()
+    # def set_folder_path(self, folder_path: str):
+    #     print("method: set_folder_path()")
+    #     self.selected_folder_path = folder_path
+    #     self.save_folder_path()
 
-    def get_folder_path(self):
-        return self.selected_folder_path
+    # def get_folder_path(self):
+    #     return self.selected_folder_path
 
     def get_is_recording(self):
         return self.is_recording

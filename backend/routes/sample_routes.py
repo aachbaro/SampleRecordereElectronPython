@@ -24,7 +24,6 @@ def sendSampleLibrary():
     try:
         # samples = Sample.query.all()
         # sample_list = [sample.to_dict() for sample in samples]
-        print("here")
         sample_list = g.sampleBank.to_dict()
         print(sample_list)
         return jsonify(sample_list)

@@ -8,20 +8,22 @@ record_bp = Blueprint('record_bp', __name__)
 @record_bp.route('/recordButtonClicked', methods=['POST'])
 def recordButtonClicked():
     try:
-        g.recorder.record_button_clicked()            
-        return jsonify(g.recorder.get_is_recording())
+        print("req: recordButtonClicked")
+        data = request.get_json()
+        g.user.recorder.record_button_clicked(data.get('path'))            
+        return jsonify(g.user.recorder.get_is_recording())
     except Exception as error:
-        print("Error:", error)
+        print("Req recordButtonPressed:", error)
 
 
-@record_bp.route('/selectSaveFolder', methods=['POST'])
-def selectFolderPath():
-    try:
-        path = request.get_data().decode('utf-8')
-        g.recorder.set_folder_path(path)
-        # g.sampleBank.set_folder_path(path)
-        print(path)
+# @record_bp.route('/selectSaveFolder', methods=['POST'])
+# def selectFolderPath():
+#     try:
+#         path = request.get_data().decode('utf-8')
+#         g.user.recorder.set_folder_path(path)
+#         # g.sampleBank.set_folder_path(path)
+#         print(path)
 
-        return('ok')
-    except Exception as error:
-        print("Error /selectSaveFolder:", error)
+#         return('ok')
+#     except Exception as error:
+#         print("Error /selectSaveFolder:", error)

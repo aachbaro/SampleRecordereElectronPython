@@ -1,23 +1,23 @@
 <template>
   <div class="widget">
-      <div class="btnWrap">
-        <v-btn
-          icon
-          size="20"
-          :class="{ recording: isRecording }"
-          @click="startRecording"
-        >
-          <v-icon size="16">mdi-microphone</v-icon>
-        </v-btn>
+    <div class="btnWrap">
+      <v-btn
+        icon
+        size="20"
+        :class="{ recording: isRecording }"
+        @click="startRecording"
+      >
+        <v-icon size="16">mdi-microphone</v-icon>
+      </v-btn>
 
-        <v-btn icon size="20" class="folder-button">
-          <v-icon size="16">mdi-folder</v-icon>
-        </v-btn>
-      </div>
-      <div class="dragzone" :class="{ hidden: hover }">
-        <v-icon size="23">mdi-drag-vertical</v-icon>
-      </div>
+      <v-btn icon size="20" class="folder-button">
+        <v-icon size="16">mdi-folder</v-icon>
+      </v-btn>
     </div>
+    <div class="dragzone" :class="{ hidden: hover }">
+      <v-icon size="23">mdi-drag-vertical</v-icon>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -27,14 +27,20 @@ export default {
   name: "RecordWidget",
   data() {
     return {
-      isRecording: false
+      libraries_paths: [],
+      selected_library_path: "",
+      isRecording: false,
     };
   },
   methods: {
     startRecording() {
       console.log("Recording button pressed");
+      this.selected_library_path = this.libraries_paths[0];
+      console.log(this.selected_library_path)
       axios
-        .post("http://127.0.0.1:5000/recordButtonClicked")
+        .post("http://127.0.0.1:5000/recordButtonClicked", {
+          path: this.selected_library_path,
+        })
         .then((response) => {
           console.log("Record Button clicked");
           this.isRecording = response.data;
@@ -44,14 +50,27 @@ export default {
           console.error("Error managing record state", error);
         });
     },
+    fetchLibrariesPaths() {
+      axios
+        .get("http://127.0.0.1:5000/getLibrariesPaths")
+        .then((response) => {
+          this.libraries_paths = response.data;
+          console.log("Libraries Paths:", this.libraries_paths);
+        })
+        .catch((error) => {
+          console.error("Error fetching libraries paths", error);
+        });
+    },
+  },
+  mounted() {
+    this.fetchLibrariesPaths();
   },
 };
 </script>
 
 <style scoped>
-
 .widget {
-  display:flex;
+  display: flex;
   align-content: center;
   align-items: center;
   justify-items: center;
@@ -107,7 +126,7 @@ export default {
 }
 
 .dragzone {
-  display:flex;
+  display: flex;
   align-content: center;
   align-items: center;
   justify-content: center;
@@ -124,5 +143,4 @@ export default {
 .dragzone.hidden {
   opacity: 0;
 }
-
 </style>
