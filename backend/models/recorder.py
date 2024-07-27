@@ -44,9 +44,7 @@ class Recorder:
         except KeyboardInterrupt:
             pass
         try:
-            print("wtf")
             allrec = np.vstack(frames)
-            print(OUTPUT_FILE_NAME)
             sf.write(file=OUTPUT_FILE_NAME, data=allrec, samplerate=SAMPLE_RATE)
             print('Audio saved in %s.', OUTPUT_FILE_NAME)
         except Exception as error:

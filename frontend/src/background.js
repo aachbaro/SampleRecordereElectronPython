@@ -30,15 +30,15 @@ async function createWindow() {
   });
 
   recordWidgetWindow = new BrowserWindow({
-    width: 100,
+    width: 87,
     height: 40,
     x: 0,
     y: 0,
     alwaysOnTop: true,
     autoHideMenuBar: true,
-    // frame: false,
+    frame: false,
     transparent: true,
-    // resizable: false,
+    resizable: false,
     titleBarStyle: "hidden",
     visibleOnFullScreen: true,
     webPreferences: {
@@ -86,20 +86,21 @@ ipcMain.on("select-folder", (event, message) => {
 ipcMain.on("start-resize", (event) => {
   if (!recordWidgetWindowIsExtended) {
     recordWidgetWindowIsExtended = true;
-    recordWidgetWindow.setSize(80, 40, true);
-    console.log(recordWidgetWindow.getSize());
+    recordWidgetWindow.setResizable(true);
+    recordWidgetWindow.setSize(87, 60, true);
+    recordWidgetWindow.setResizable(false);
   }
 });
 
 ipcMain.on("end-resize", () => {
   if (recordWidgetWindowIsExtended) {
-    setTimeout(() => {
-      recordWidgetWindow.setSize(40, 40, true);
-      recordWidgetWindowIsExtended = false;
-    }, 300);
-    console.log(recordWidgetWindow.getSize());
+    recordWidgetWindow.setResizable(true);
+    recordWidgetWindow.setSize(87, 40, true);
+    recordWidgetWindow.setResizable(false);
+    recordWidgetWindowIsExtended = false;
   }
 });
+
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {

@@ -1,21 +1,30 @@
 <template>
   <div class="widget">
-    <div class="btnWrap">
-      <v-btn
-        icon
-        size="20"
-        :class="{ recording: isRecording }"
-        @click="startRecording"
-      >
-        <v-icon size="16">mdi-microphone</v-icon>
-      </v-btn>
-
-      <v-btn icon size="20" class="folder-button">
-        <v-icon size="16">mdi-folder</v-icon>
-      </v-btn>
+    <div class="firstLine">
+      <div :class="['btnWrap']">
+        <v-btn
+          icon
+          size="20"
+          :class="{ recording: isRecording }"
+          @click="startRecording"
+        >
+          <v-icon size="16">mdi-microphone</v-icon>
+        </v-btn>
+        <div class="folder-button" @wheel="changeLibraryPath">
+          <div class="icon-wrapper" @click="showDirName">
+            <v-icon size="24" class="folder-icon">mdi-folder</v-icon>
+            <p class="folder-number">{{ selected_library_path }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="dragzone" :class="{ hidden: hover }">
+        <v-icon size="23">mdi-drag-vertical</v-icon>
+      </div>
     </div>
-    <div class="dragzone" :class="{ hidden: hover }">
-      <v-icon size="23">mdi-drag-vertical</v-icon>
+    <div v-if="show_dir_name" class="libraryName">
+    <span >{{
+      libraries_names[selected_library_path]
+    }}</span>
     </div>
   </div>
 </template>
@@ -28,18 +37,18 @@ export default {
   data() {
     return {
       libraries_paths: [],
-      selected_library_path: "",
+      libraries_names: [],
+      selected_library_path: 0,
       isRecording: false,
+      show_dir_name: false,
     };
   },
   methods: {
     startRecording() {
       console.log("Recording button pressed");
-      this.selected_library_path = this.libraries_paths[0];
-      console.log(this.selected_library_path)
       axios
         .post("http://127.0.0.1:5000/recordButtonClicked", {
-          path: this.selected_library_path,
+          path: this.libraries_paths[this.selected_library_path],
         })
         .then((response) => {
           console.log("Record Button clicked");
@@ -50,12 +59,40 @@ export default {
           console.error("Error managing record state", error);
         });
     },
+
+    changeLibraryPath(event) {
+      if (event.deltaY > 0) {
+        this.selected_library_path =
+          (this.selected_library_path + 1) % this.libraries_paths.length;
+      } else {
+        this.selected_library_path =
+          (this.selected_library_path - 1 + this.libraries_paths.length) %
+          this.libraries_paths.length;
+      }
+    },
+
+    showDirName(event) {
+      event;
+      this.show_dir_name = !this.show_dir_name;
+      window.ipcRenderer.send(
+        this.show_dir_name ? "start-resize" : "end-resize",
+        "Message simple depuis SelectFolderPath"
+      );
+    },
+
     fetchLibrariesPaths() {
       axios
         .get("http://127.0.0.1:5000/getLibrariesPaths")
         .then((response) => {
           this.libraries_paths = response.data;
+          this.libraries_names = this.libraries_paths.map((path) =>
+            path.split("\\").pop()
+          );
+          this.libraries_names = this.libraries_names.map((path) =>
+            path.split("/").pop()
+          );
           console.log("Libraries Paths:", this.libraries_paths);
+          console.log("library names:", this.libraries_names);
         })
         .catch((error) => {
           console.error("Error fetching libraries paths", error);
@@ -69,20 +106,17 @@ export default {
 </script>
 
 <style scoped>
-.widget {
+.firstLine {
   display: flex;
   align-content: center;
   align-items: center;
   justify-items: center;
-  /* justify-content: center */
 }
 
 .btnWrap {
   display: flex;
   align-content: center;
   align-items: center;
-  /* justify-items: center; */
-  /* justify-content: center; */
   width: 36px;
   height: 36px;
   border-radius: 10px;
@@ -90,13 +124,20 @@ export default {
   border-width: 1px;
   border-color: white;
   opacity: 70%;
-  transition: width 0.5s ease-in-out;
+  transition: width 0.3s ease-in-out;
   overflow: hidden;
-  /* outline: 1px solid red; */
 }
 
 .btnWrap:hover {
-  width: 72px;
+  width: 80px;
+}
+
+.btnWrap:hover .icon-wrapper {
+  display: block;
+}
+
+.btnWrap.expanded {
+  width: 200px;
 }
 
 .btnWrap:hover + .dragzone {
@@ -120,9 +161,52 @@ export default {
   color: red !important;
 }
 
-.btnWrap .folder-button {
-  opacity: 0%;
-  transition: opacity 1s ease-in;
+.folder-button {
+  position: relative; /* Ensure that the text is positioned relative to the button */
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-wrapper {
+  display: none;
+  position: relative; /* Position text over icon */
+  width: 100%;
+  height: 100%;
+}
+
+.folder-icon {
+  position: absolute; /* Position the icon */
+  width: 30px;
+  height: 30px;
+  color: white;
+}
+
+.folder-button:hover .folder-icon {
+  color: #aaa;
+}
+
+.folder-number:hover .folder-icon {
+  color: #aaa;
+}
+
+.folder-number {
+  position: absolute; /* Position the number over the icon */
+  top: 51%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center the text */
+  color: black;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 0; /* Ensure the number is above the icon */
+  cursor: pointer;
+}
+
+.libraryindicator {
+  background-color: white !important;
+  /* position: absolute; */
 }
 
 .dragzone {
@@ -133,7 +217,6 @@ export default {
   justify-items: center;
   width: 20px;
   height: 40px;
-  /* background-color: #aaa !important; */
   color: white;
   -webkit-app-region: drag;
   opacity: 50%;
@@ -142,5 +225,12 @@ export default {
 
 .dragzone.hidden {
   opacity: 0;
+}
+
+.libraryName {
+  color:#aaa;
+  font-size: 10px;
+  justify-content: start;
+  height: 1px;
 }
 </style>

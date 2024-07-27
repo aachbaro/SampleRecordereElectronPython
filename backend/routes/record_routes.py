@@ -8,7 +8,6 @@ record_bp = Blueprint('record_bp', __name__)
 @record_bp.route('/recordButtonClicked', methods=['POST'])
 def recordButtonClicked():
     try:
-        print("req: recordButtonClicked")
         data = request.get_json()
         g.user.recorder.record_button_clicked(data.get('path'))            
         return jsonify(g.user.recorder.get_is_recording())
