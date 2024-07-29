@@ -229,8 +229,7 @@ export default {
 
 .libraryName {
   color:#aaa;
-  font-size: 10px;
+  font-size: 11px;
   justify-content: start;
-  height: 1px;
 }
 </style>

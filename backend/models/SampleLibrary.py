@@ -68,12 +68,8 @@ class SampleBank:
     def to_dict(self):
         print("SampleBank.to_dict")
         return {
+            'id': self.id,
             'root_path': str(self.root_path),
             'contents': [item.to_dict() for item in self.contents],
             'is_directory': True
         }
-    
-# root_dir = "C:/Users/adama/Desktop/musique/librarypascuans/synth"
-# sample_bank = SampleBank(root_dir)
-
-# print(sample_bank.to_dict())

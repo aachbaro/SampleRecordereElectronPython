@@ -32,14 +32,32 @@ class User:
             print("Adding library")
             folder_path_list = [str(lib.root_path) for lib in self.sample_libraries]
             print("Current folder paths:", folder_path_list)
+            if new_folder_path in folder_path_list:
+                print(f"Library {new_folder_path} already exists")
+                return f"Library {new_folder_path} already exists"
             folder_path_list.append(new_folder_path)
             print("Updated folder paths:", folder_path_list)
             with open("folder_path.pkl", "wb") as file:
                 pickle.dump(folder_path_list, file)
             self.sample_libraries = self.init_user_libraries()
+            return f"Library {new_folder_path} added successfully"
         except Exception as error:
             print("Add library:", error)
+            return f"Error adding library: {error}"
 
+    def remove_library(self, library_to_remove: str):
+        try:
+            print("Removing library")
+            library_to_remove_path = Path(library_to_remove)
+            self.sample_libraries = [lib for lib in self.sample_libraries if lib.root_path != library_to_remove_path]
+            folder_path_list = [str(lib.root_path) for lib in self.sample_libraries]
+            print("Updated folder paths after removal:", folder_path_list)
+            with open("folder_path.pkl", "wb") as file:
+                pickle.dump(folder_path_list, file)
+            return f"Library {library_to_remove} removed successfully"
+        except Exception as error:
+            print("Remove library:", error)
+            return f"There was an error removing {library_to_remove}: {error}"
 
     def get_sample_libraries(self):
         return self.sample_libraries

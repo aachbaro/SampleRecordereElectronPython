@@ -17,7 +17,7 @@
   <script>
     import SampleItem from './SampleItem.vue'
     import SelectFolderPath from './SelectFolderPath.vue'
-    import axios from 'axios'
+    // import axios from 'axios'
   
     export default {
         name: 'SampleLibrary',
@@ -30,22 +30,22 @@
             samples: []
         }),
         methods: {
-            async fetchSamples() {
-              console.log("FileViewer: fetch Sample")
-                try {
-                    await axios.get('http://localhost:5000/getSampleLibrary')
-                    .then((res) => {
-                      console.log("res", res.data)
+            // async fetchSamples() {
+            //   console.log("FileViewer: fetch Sample")
+            //     try {
+            //         await axios.get('http://localhost:5000/getSampleLibrary')
+            //         .then((res) => {
+            //           console.log("res", res.data)
 
-                    })
+            //         })
                     
-                } catch (error) {
-                    console.error("There was an error fetching the samples:", error);
-                }
-            },
+            //     } catch (error) {
+            //         console.error("There was an error fetching the samples:", error);
+            //     }
+            // },
         },
         mounted() {
-          this.fetchSamples();
+          // this.fetchSamples();
         }
     }
   </script>

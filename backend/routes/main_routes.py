@@ -19,10 +19,10 @@ def selectFolderPath():
         print("add library")
         path = request.get_data().decode('utf-8')
         # g.user.recorder.set_folder_path(path)
-        g.user.add_library(path)
+        response = g.user.add_library(path)
         print(path)
 
-        return('ok')
+        return(jsonify(response))
     except Exception as error:
         print("Error /selectSaveFolder:", error)
 
@@ -33,3 +33,19 @@ def sendLibrariesPaths():
         return jsonify(g.user.get_libraries_paths())
     except Exception as error:
         print("sendLibrariesPath:", error)
+
+@main_bp.route('/removeLibraryPath', methods=['POST'])
+def removeLibraryPath():
+    try:
+        print("remove library path")
+        data = request.get_json()
+        print(data)
+        path_to_remove = data.get('path')
+        if not path_to_remove:
+            return jsonify({"error": "No path provided"}), 400
+
+        response = g.user.remove_library(path_to_remove)
+        return jsonify({"success": True})
+    except Exception as error:
+        print("remove library path:", error)
+        return str(error), 500

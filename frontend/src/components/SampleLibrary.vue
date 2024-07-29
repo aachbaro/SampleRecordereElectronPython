@@ -39,7 +39,7 @@
       }
     },
     mounted() {
-      this.fetchSamples();
+      // this.fetchSamples();
     }
   }
   </script>

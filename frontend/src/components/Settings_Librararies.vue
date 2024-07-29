@@ -9,12 +9,21 @@
         {{ showList ? "mdi-chevron-up" : "mdi-chevron-down" }}
       </v-icon>
     </div>
-    <v-divider v-if="showList" class="divider"></v-divider>
+    <!-- <v-divider v-if="showList" class="divider"></v-divider> -->
 
     <div class="LibrariesItems" v-if="showList">
-      <v-list></v-list>
+      <div
+        v-for="(path, index) in libraries_paths"
+        :key="index"
+        class="library-card"
+      >
+        {{ libraries_names[index] }}
+        <button icon size="20" @click="removeLibrary(index)" small>
+          <v-icon size="18">mdi-delete</v-icon>
+        </button>
+      </div>
     </div>
-    <v-divider v-if="showList" class="divider"></v-divider>
+    <!-- <v-divider v-if="showList" class="divider"></v-divider> -->
     <div class="addLibrary" v-if="showList" @click="selectDirectory">
       <v-icon size="23">mdi-folder-plus-outline</v-icon>
       <p>Add Sample Library</p>
@@ -28,7 +37,9 @@ import axios from "axios";
 export default {
   name: "SettingsLibrariesList",
   data: () => ({
-    showList: false,
+    showList: true,
+    libraries_paths: [],
+    libraries_names: [],
   }),
   methods: {
     selectDirectory() {
@@ -37,6 +48,40 @@ export default {
         "select-folder",
         "Message simple depuis SelectFolderPath"
       );
+    },
+
+    fetchLibrariesPaths() {
+      axios
+        .get("http://127.0.0.1:5000/getLibrariesPaths")
+        .then((response) => {
+          this.libraries_paths = response.data;
+          this.libraries_names = this.libraries_paths.map((path) =>
+            path.split("\\").pop()
+          );
+          this.libraries_names = this.libraries_names.map((path) =>
+            path.split("/").pop()
+          );
+          console.log("Libraries Paths:", this.libraries_paths);
+          console.log("library names:", this.libraries_names);
+        })
+        .catch((error) => {
+          console.error("Error fetching libraries paths", error);
+        });
+    }, 
+
+    removeLibrary(index) {
+      axios
+        .post("http://127.0.0.1:5000/removeLibraryPath", {
+          path: this.libraries_paths[index],
+        })
+        .then((response) => {
+          console.log("Sending remove library request for: ", this.libraries_paths[index]);
+          console.log(response);
+          this.fetchLibrariesPaths();
+        }) 
+        .catch((error) => {
+          console.error("Error removing library path", error);
+        });
     },
 
     toggleList() {
@@ -53,11 +98,14 @@ export default {
         .then((response) => {
           console.log("Folder selected successfully");
           console.log(response);
+          this.fetchLibrariesPaths();
         })
         .catch((error) => {
           console.error("Error selecting folder", error);
         });
     });
+
+    this.fetchLibrariesPaths();
   },
 };
 </script>
@@ -98,18 +146,33 @@ export default {
 }
 
 .LibrariesItems {
-  margin: 16px 0;
+  padding: 10px;
 }
 
 .addLibrary {
   display: flex;
   align-items: center;
-  margin-top: 16px;
+  /* margin-top: 16px; */
   cursor: pointer;
+  margin-left: 20px;
+  margin-bottom: 10px;
   color: #3f51b5; /* Accent color */
 }
 
-.addLibrary v-icon {
-  margin-right: 8px;
+.addLibrary p {
+  margin-left: 10px;
+}
+
+.library-card {
+  display: flex;
+  justify-content: space-between;
+  border-radius: 3px;
+  width: 100%;
+  padding: 10px;
+
+  border: solid;
+  border-width: 1px;
+  border-color: #aaa;
+  margin-bottom: 10px;
 }
 </style>
