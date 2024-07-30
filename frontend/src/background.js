@@ -38,7 +38,7 @@ async function createWindow() {
     autoHideMenuBar: true,
     frame: false,
     transparent: true,
-    resizable: false,
+    // resizable: false,
     titleBarStyle: "hidden",
     visibleOnFullScreen: true,
     webPreferences: {
@@ -71,6 +71,13 @@ async function createWindow() {
   }
 }
 
+ipcMain.on("update-libraries", () => {
+  console.log("background.js: receiving update lib")
+  setTimeout(() => {
+    recordWidgetWindow.webContents.send("libraries-updated");
+  }, "200")
+});
+
 ipcMain.on("select-folder", (event, message) => {
   console.log("Message reçu depuis SelectFolderPath:", message);
   const result = dialog
@@ -100,7 +107,6 @@ ipcMain.on("end-resize", () => {
     recordWidgetWindowIsExtended = false;
   }
 });
-
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {

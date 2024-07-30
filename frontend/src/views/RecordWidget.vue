@@ -22,9 +22,7 @@
       </div>
     </div>
     <div v-if="show_dir_name" class="libraryName">
-    <span >{{
-      libraries_names[selected_library_path]
-    }}</span>
+      <span>{{ libraries_names[selected_library_path] }}</span>
     </div>
   </div>
 </template>
@@ -36,12 +34,18 @@ export default {
   name: "RecordWidget",
   data() {
     return {
-      libraries_paths: [],
-      libraries_names: [],
       selected_library_path: 0,
       isRecording: false,
       show_dir_name: false,
     };
+  },
+  computed: {
+    libraries_paths() {
+      return this.$store.state.libraries_paths;
+    },
+    libraries_names() {
+      return this.$store.state.libraries_names;
+    },
   },
   methods: {
     startRecording() {
@@ -79,28 +83,14 @@ export default {
         "Message simple depuis SelectFolderPath"
       );
     },
-
-    fetchLibrariesPaths() {
-      axios
-        .get("http://127.0.0.1:5000/getLibrariesPaths")
-        .then((response) => {
-          this.libraries_paths = response.data;
-          this.libraries_names = this.libraries_paths.map((path) =>
-            path.split("\\").pop()
-          );
-          this.libraries_names = this.libraries_names.map((path) =>
-            path.split("/").pop()
-          );
-          console.log("Libraries Paths:", this.libraries_paths);
-          console.log("library names:", this.libraries_names);
-        })
-        .catch((error) => {
-          console.error("Error fetching libraries paths", error);
-        });
-    },
   },
   mounted() {
-    this.fetchLibrariesPaths();
+    this.$store.dispatch("fetchLibrariesPaths");
+    
+    window.ipcRenderer.receive("libraries-updated", () => {
+      console.log("receiving libraries-updadted")
+      this.$store.dispatch("fetchLibrariesPaths");
+    });
   },
 };
 </script>
@@ -228,7 +218,7 @@ export default {
 }
 
 .libraryName {
-  color:#aaa;
+  color: #aaa;
   font-size: 11px;
   justify-content: start;
 }

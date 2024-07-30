@@ -9,7 +9,6 @@
         {{ showList ? "mdi-chevron-up" : "mdi-chevron-down" }}
       </v-icon>
     </div>
-    <!-- <v-divider v-if="showList" class="divider"></v-divider> -->
 
     <div class="LibrariesItems" v-if="showList">
       <div
@@ -18,12 +17,12 @@
         class="library-card"
       >
         {{ libraries_names[index] }}
-        <button icon size="20" @click="removeLibrary(index)" small>
+        <button icon size="20" @click="removeLib(index)" small>
           <v-icon size="18">mdi-delete</v-icon>
         </button>
       </div>
     </div>
-    <!-- <v-divider v-if="showList" class="divider"></v-divider> -->
+
     <div class="addLibrary" v-if="showList" @click="selectDirectory">
       <v-icon size="23">mdi-folder-plus-outline</v-icon>
       <p>Add Sample Library</p>
@@ -32,15 +31,20 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
   name: "SettingsLibrariesList",
   data: () => ({
     showList: true,
-    libraries_paths: [],
-    libraries_names: [],
   }),
+  computed: {
+    libraries_paths() {
+      return this.$store.state.libraries_paths;
+    },
+    libraries_names() {
+      return this.$store.state.libraries_names;
+    },
+  },
+
   methods: {
     selectDirectory() {
       console.log("select-folder-path");
@@ -50,38 +54,10 @@ export default {
       );
     },
 
-    fetchLibrariesPaths() {
-      axios
-        .get("http://127.0.0.1:5000/getLibrariesPaths")
-        .then((response) => {
-          this.libraries_paths = response.data;
-          this.libraries_names = this.libraries_paths.map((path) =>
-            path.split("\\").pop()
-          );
-          this.libraries_names = this.libraries_names.map((path) =>
-            path.split("/").pop()
-          );
-          console.log("Libraries Paths:", this.libraries_paths);
-          console.log("library names:", this.libraries_names);
-        })
-        .catch((error) => {
-          console.error("Error fetching libraries paths", error);
-        });
-    }, 
-
-    removeLibrary(index) {
-      axios
-        .post("http://127.0.0.1:5000/removeLibraryPath", {
-          path: this.libraries_paths[index],
-        })
-        .then((response) => {
-          console.log("Sending remove library request for: ", this.libraries_paths[index]);
-          console.log(response);
-          this.fetchLibrariesPaths();
-        }) 
-        .catch((error) => {
-          console.error("Error removing library path", error);
-        });
+    removeLib(index) {
+      this.$store.dispatch("removeLibraryPath", this.libraries_paths[index]).then(() => {
+        window.ipcRenderer.send('update-libraries');
+      })
     },
 
     toggleList() {
@@ -89,30 +65,21 @@ export default {
     },
   },
   mounted() {
+    this.$store.dispatch("fetchLibrariesPaths");
+
     window.ipcRenderer.receive("select-folder", (filePaths) => {
       console.log("Dossiers sélectionnés :", filePaths);
-      this.$emit("directorySelected", filePaths);
-
-      axios
-        .post("http://127.0.0.1:5000/selectSaveFolder", filePaths)
-        .then((response) => {
-          console.log("Folder selected successfully");
-          console.log(response);
-          this.fetchLibrariesPaths();
-        })
-        .catch((error) => {
-          console.error("Error selecting folder", error);
-        });
+      this.$store.dispatch("addLibraryPath", filePaths).then(() => {
+        console.log("sending update-libraries")
+        window.ipcRenderer.send('update-libraries');
+      })
     });
-
-    this.fetchLibrariesPaths();
   },
 };
 </script>
 
 <style scoped>
 .card {
-  /* background-color: #eee !important; */
   padding: 8px;
   border-radius: 8px;
   outline: 1px solid #ccc;
@@ -141,10 +108,6 @@ export default {
   padding: 5px;
 }
 
-.divider {
-  margin: 8px 0;
-}
-
 .LibrariesItems {
   padding: 10px;
 }
@@ -152,7 +115,6 @@ export default {
 .addLibrary {
   display: flex;
   align-items: center;
-  /* margin-top: 16px; */
   cursor: pointer;
   margin-left: 20px;
   margin-bottom: 10px;
@@ -169,10 +131,7 @@ export default {
   border-radius: 3px;
   width: 100%;
   padding: 10px;
-
-  border: solid;
-  border-width: 1px;
-  border-color: #aaa;
+  border: solid 1px #aaa;
   margin-bottom: 10px;
 }
 </style>
