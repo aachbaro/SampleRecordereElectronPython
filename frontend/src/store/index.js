@@ -6,8 +6,9 @@ const store = createStore({
     libraries_paths: [],
     libraries_names: [],
   },
+
   actions: {
-    fetchLibrariesPaths({commit}) {
+    fetchLibrariesPaths({ commit }) {
       axios
         .get("http://127.0.0.1:5000/getLibrariesPaths")
         .then((response) => {
@@ -24,39 +25,38 @@ const store = createStore({
         });
     },
 
-    addLibraryPath({dispatch}, filePaths) {
+    addLibraryPath({ dispatch }, filePaths) {
       axios
         .post("http://127.0.0.1:5000/selectSaveFolder", filePaths)
         .then((response) => {
           console.log("Folder selected successfully");
           console.log(response);
-           dispatch("fetchLibrariesPaths");
+          dispatch("fetchLibrariesPaths");
+          window.ipcRenderer.send("update-libraries");
         })
         .catch((error) => {
           console.error("Error selecting folder", error);
         });
     },
 
-    removeLibraryPath({dispatch}, filePaths) {
+    removeLibraryPath({ dispatch }, filePaths) {
       axios
-        .post("http://127.0.0.1:5000/removeLibraryPath", {
-          path: filePaths,
-        })
+        .post("http://127.0.0.1:5000/removeLibraryPath", filePaths)
         .then((response) => {
           console.log("Sending remove library request for: ", filePaths);
           console.log(response);
           dispatch("fetchLibrariesPaths");
-        }) 
+          window.ipcRenderer.send("update-libraries");
+        })
         .catch((error) => {
           console.error("Error removing library path", error);
         });
-    }
-
+    },
   },
 
   mutations: {
     setLibraries(state, { libraries_paths, libraries_names }) {
-      console.log("Commiting setLibraries")
+      console.log("Commiting setLibraries");
       state.libraries_paths = libraries_paths;
       state.libraries_names = libraries_names;
     },

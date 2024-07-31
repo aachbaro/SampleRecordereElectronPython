@@ -48,16 +48,12 @@ export default {
   methods: {
     selectDirectory() {
       console.log("select-folder-path");
-      window.ipcRenderer.send(
-        "select-folder",
-        "Message simple depuis SelectFolderPath"
-      );
+      window.ipcRenderer.send("select-folder-path", "");
     },
 
     removeLib(index) {
-      this.$store.dispatch("removeLibraryPath", this.libraries_paths[index]).then(() => {
-        window.ipcRenderer.send('update-libraries');
-      })
+      console.log("remove library:", this.libraries_paths[index])
+      this.$store.dispatch("removeLibraryPath", this.libraries_paths[index]);
     },
 
     toggleList() {
@@ -69,11 +65,13 @@ export default {
 
     window.ipcRenderer.receive("select-folder", (filePaths) => {
       console.log("Dossiers sélectionnés :", filePaths);
-      this.$store.dispatch("addLibraryPath", filePaths).then(() => {
-        console.log("sending update-libraries")
-        window.ipcRenderer.send('update-libraries');
-      })
+      this.$store.dispatch("addLibraryPath", filePaths);
     });
+
+    // window.ipcRenderer.receive("libraries-updated", () => {
+    //   console.log("receiving libraries-updadted")
+    //   this.$store.dispatch("fetchLibrariesPaths");
+    // });
   },
 };
 </script>

@@ -38,9 +38,7 @@ def sendLibrariesPaths():
 def removeLibraryPath():
     try:
         print("remove library path")
-        data = request.get_json()
-        print(data)
-        path_to_remove = data.get('path')
+        path_to_remove = request.get_data().decode('utf-8')
         if not path_to_remove:
             return jsonify({"error": "No path provided"}), 400
 

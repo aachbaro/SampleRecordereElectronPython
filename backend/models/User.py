@@ -30,17 +30,28 @@ class User:
     def add_library(self, new_folder_path: str):
         try:
             print("Adding library")
+            
+            # Check if the new path is a valid directory
+            if not os.path.isdir(new_folder_path):
+                print(f"{new_folder_path} is not a valid directory")
+                return f"Error: {new_folder_path} is not a valid directory"
+
             folder_path_list = [str(lib.root_path) for lib in self.sample_libraries]
             print("Current folder paths:", folder_path_list)
+            
             if new_folder_path in folder_path_list:
                 print(f"Library {new_folder_path} already exists")
                 return f"Library {new_folder_path} already exists"
+
             folder_path_list.append(new_folder_path)
             print("Updated folder paths:", folder_path_list)
+            
             with open("folder_path.pkl", "wb") as file:
                 pickle.dump(folder_path_list, file)
+
             self.sample_libraries = self.init_user_libraries()
             return f"Library {new_folder_path} added successfully"
+
         except Exception as error:
             print("Add library:", error)
             return f"Error adding library: {error}"

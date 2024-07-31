@@ -10,14 +10,17 @@ import path from "path";
 
 const __dirname = path.resolve(path.dirname(""));
 let recordWidgetWindow;
+let win;
 let recordWidgetWindowIsExtended = false;
 
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
 ]);
 
+// CREATING WINDOWS
+
 async function createWindow() {
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 800,
     height: 600,
     autoHideMenuBar: true,
@@ -54,7 +57,6 @@ async function createWindow() {
   recordWidgetWindow.setAlwaysOnTop(true, "screen-saver", 1);
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
-    // Load the url of the dev server if in development mode
     await win.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL}`);
     await recordWidgetWindow.loadURL(
       `${process.env.WEBPACK_DEV_SERVER_URL}record`
@@ -65,28 +67,33 @@ async function createWindow() {
     if (!process.env.IS_TEST) win.webContents.openDevTools();
   } else {
     createProtocol("app");
-    // Load the index.html when not in development
     win.loadURL("app://./index.html");
     recordWidgetWindow.loadURL("app://./index.html#/record");
   }
 }
 
+// HANDLING IPC
+
 ipcMain.on("update-libraries", () => {
-  console.log("background.js: receiving update lib")
-  setTimeout(() => {
-    recordWidgetWindow.webContents.send("libraries-updated");
-  }, "200")
+  console.log("background.js: receiving update lib");
+  recordWidgetWindow.webContents.send("libraries-updated");
 });
 
-ipcMain.on("select-folder", (event, message) => {
+ipcMain.on("select-folder-path", async (event, message) => {
   console.log("Message reçu depuis SelectFolderPath:", message);
   const result = dialog
     .showOpenDialog({ properties: ["openDirectory", "multiSelections"] })
     .then((result) => {
       if (!result.canceled) {
-        event.sender.send("select-folder", result.filePaths[0]);
+        const filePath = result.filePaths[0];
+        console.log("select-folder:", filePath);
+        try {
+          event.sender.send("select-folder", filePath);
+          recordWidgetWindow.webContents.send("libraries-updated");
+        } catch (error) {
+          console.error("Error adding library path:", error);
+        }
       }
-      console.log(result);
     });
 });
 
@@ -109,11 +116,14 @@ ipcMain.on("end-resize", () => {
 });
 
 // Quit when all windows are closed.
+
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
 });
+
+// LAUNCHING APP
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();

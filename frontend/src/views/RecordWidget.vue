@@ -17,7 +17,7 @@
           </div>
         </div>
       </div>
-      <div class="dragzone" :class="{ hidden: hover }">
+      <div class="dragzone">
         <v-icon size="23">mdi-drag-vertical</v-icon>
       </div>
     </div>
