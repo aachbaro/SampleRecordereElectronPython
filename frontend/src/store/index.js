@@ -93,6 +93,7 @@ const store = createStore({
         .then((response) => {
           console.log(response);
           dispatch("fetchBackwardRecordingInfos");
+          window.ipcRenderer.send("update-bac_rec");
         })
         .catch((error) => {
           console.error("Error activating backward Recording", error);

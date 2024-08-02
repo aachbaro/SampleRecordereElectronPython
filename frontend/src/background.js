@@ -79,6 +79,11 @@ ipcMain.on("update-libraries", () => {
   recordWidgetWindow.webContents.send("libraries-updated");
 });
 
+ipcMain.on("update-bac_rec", () => {
+  console.log("background.js: receiving update lib");
+  recordWidgetWindow.webContents.send("bac_rec-updated");
+});
+
 ipcMain.on("select-folder-path", async (event, message) => {
   console.log("Message reçu depuis SelectFolderPath:", message);
   const result = dialog

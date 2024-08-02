@@ -1,14 +1,20 @@
 <template>
   <div class="widget">
     <div class="firstLine">
-      <div :class="['btnWrap']">
+      <div :class="['btnWrap', { 'blue-border': bac_rec_enabled }]">
         <v-btn
           icon
           size="20"
           :class="{ recording: isRecording }"
+          @wheel="changeBacRecTime"
           @click="startRecording"
         >
-          <v-icon size="16">mdi-microphone</v-icon>
+          <v-icon size="16" v-if="!bac_rec_enabled || selected_bac_rec_time == 0">mdi-microphone</v-icon>
+          <span
+            class="show_bac_rec_time"
+            v-if="bac_rec_enabled && selected_bac_rec_time != 0"
+            >{{ selected_bac_rec_time }}s</span
+          >
         </v-btn>
         <div class="folder-button" @wheel="changeLibraryPath">
           <div class="icon-wrapper" @click="showDirName">
@@ -23,6 +29,7 @@
     </div>
     <div v-if="show_dir_name" class="libraryName">
       <span>{{ libraries_names[selected_library_path] }}</span>
+      {{ bac_rec_time }}
     </div>
   </div>
 </template>
@@ -37,6 +44,7 @@ export default {
       selected_library_path: 0,
       isRecording: false,
       show_dir_name: false,
+      selected_bac_rec_time: 0,
     };
   },
   computed: {
@@ -46,6 +54,12 @@ export default {
     libraries_names() {
       return this.$store.state.libraries_names;
     },
+    bac_rec_enabled() {
+      return this.$store.state.bac_rec_enabled;
+    },
+    bac_rec_time() {
+      return this.$store.state.bac_rec_time;
+    },
   },
   methods: {
     startRecording() {
@@ -53,6 +67,7 @@ export default {
       axios
         .post("http://127.0.0.1:5000/recordButtonClicked", {
           path: this.libraries_paths[this.selected_library_path],
+          // retroTime: this.selected_bac_rec_time
         })
         .then((response) => {
           console.log("Record Button clicked");
@@ -74,6 +89,15 @@ export default {
           this.libraries_paths.length;
       }
     },
+    changeBacRecTime(event) {
+      if (event.deltaY > 0) {
+        this.selected_bac_rec_time =
+          Math.min((this.selected_bac_rec_time + 1), this.bac_rec_time)
+      } else {
+        this.selected_bac_rec_time =
+          Math.max((this.selected_bac_rec_time - 1), 0)
+      }
+    },
 
     showDirName(event) {
       event;
@@ -86,10 +110,16 @@ export default {
   },
   mounted() {
     this.$store.dispatch("fetchLibrariesPaths");
-    
+    this.$store.dispatch("fetchBackwardRecordingInfos");
+
     window.ipcRenderer.receive("libraries-updated", () => {
-      console.log("receiving libraries-updadted")
+      console.log("receiving libraries-updadted");
       this.$store.dispatch("fetchLibrariesPaths");
+    });
+
+    window.ipcRenderer.receive("bac_rec-updated", () => {
+      console.log("receiving bac_rec-updadted");
+      this.$store.dispatch("fetchBackwardRecordingInfos");
     });
   },
 };
@@ -221,5 +251,15 @@ export default {
   color: #aaa;
   font-size: 11px;
   justify-content: start;
+}
+
+.show_bac_rec_time {
+  font-size: 13px;
+  font-weight: 550;
+}
+
+.blue-border {
+  border-color: #feca57 !important;
+  border-color: #1dd1a1 !important;
 }
 </style>

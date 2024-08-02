@@ -41,9 +41,7 @@ class Recorder:
 
     def bac_rec_activated(self):
         print("back_rec_activated")
-        print("okkkkkkk")
         self.mic = sc.get_microphone(id=str(sc.default_speaker().name), include_loopback=True).recorder(samplerate=44100)
-        print(self.mic)
         self.bac_rec_thread = threading.Thread(target=self.back_recording)
         self.bac_rec_thread.start()
 
@@ -95,8 +93,6 @@ class Recorder:
                     pre_frames.clear()
 
                 data = self.mic.record(numframes=sample_rate)
-                print(data)
-                print(len(pre_frames))
                 if np.any(data) or sound_started:
                     sound_started = True
                     if (record_started):

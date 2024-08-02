@@ -53,7 +53,7 @@ export default {
       });
     },
   },
-  created() {
+  mounted() {
     this.$store.dispatch("fetchBackwardRecordingInfos").then(
       () => {
         this.new_bac_rec_state = this.$store.state.bac_rec_enabled;
