@@ -13,8 +13,12 @@ class User:
     def __init__(self):
         print("Initialisation du User")
         self.sample_libraries = self.init_user_libraries()
-        self.recorder = Recorder()
-        print("sample_libraries: ", self.sample_libraries)
+        self.bac_rec_enabled = False
+        self.bac_rec_time = 0
+        self.load_user_state()
+        self.save_user_state()
+        self.recorder = Recorder(self.bac_rec_enabled, self.bac_rec_time)
+        print(self.bac_rec_enabled, self.bac_rec_time)
 
     def init_user_libraries(self):
         try:
@@ -70,11 +74,56 @@ class User:
             print("Remove library:", error)
             return f"There was an error removing {library_to_remove}: {error}"
 
+    
+
+
+
+
+
+    def save_user_state(self):
+        try:
+            state = {
+                'bac_rec_enabled': self.bac_rec_enabled,
+                'bac_rec_time': self.bac_rec_time
+            }
+            with open("bac_rec_state.pkl", "wb") as file:
+                pickle.dump(state, file)
+            print("User state saved successfully")
+        except Exception as e:
+            print(f"Error saving user state: {e}")
+
+    def load_user_state(self):
+        try:
+            with open("bac_rec_state.pkl", "rb") as file:
+                state = pickle.load(file)
+                self.bac_rec_enabled = state.get('bac_rec_enabled', False)
+                self.bac_rec_time = state.get('bac_rec_time', 0)
+            print("User state loaded successfully")
+        except FileNotFoundError:
+            print("No previous user state found")
+        except Exception as e:
+            print(f"Error loading user state: {e}")
+
+
+
+
+
+
     def get_sample_libraries(self):
         return self.sample_libraries
 
     def get_libraries_paths(self):
         return [str(lib.root_path) for lib in self.sample_libraries]
+    
+    def get_bac_rec_infos(self):
+        return {
+            'bac_rec_enabled': self.bac_rec_enabled,
+            'bac_rec_time': self.bac_rec_time
+        }
+    
+
+
+
 
     def to_dict(self):
         return {

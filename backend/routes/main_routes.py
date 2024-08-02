@@ -47,3 +47,48 @@ def removeLibraryPath():
     except Exception as error:
         print("remove library path:", error)
         return str(error), 500
+
+    
+@main_bp.route('/getBacRecInfos', methods=['GET'])
+def sendBackRecInfos():
+    try:
+        print("sendBacRecInfos:", g.user.get_bac_rec_infos())
+        return jsonify(g.user.get_bac_rec_infos())
+    except Exception as error:
+        print("sendLibrariesPath:", error)
+
+@main_bp.route('/modifyBackRecording', methods=['POST'])
+def modifyBackRecording():
+    try:
+        raw_data = request.json
+        payload = raw_data.get('payload')
+        bac_rec_enabled = payload.get('bac_rec_enabled')
+        bac_rec_time = payload.get('bac_rec_time')
+        start_bac_rec = False
+        stop_bac_rec = False
+
+        user = g.user
+        print("condition: ", g.user.bac_rec_enabled, bac_rec_enabled)
+        if (g.user.bac_rec_enabled == False and bac_rec_enabled == True):
+            start_bac_rec = True
+        elif (g.user.bac_rec_enabled == True and bac_rec_enabled == False):
+            stop_bac_rec = True
+
+        user.bac_rec_enabled = bac_rec_enabled
+        user.bac_rec_time = bac_rec_time
+        user.recorder.bac_rec_enabled = bac_rec_enabled
+        user.recorder.bac_rec_time = bac_rec_time
+        user.save_user_state()
+        
+        if (start_bac_rec):
+            g.user.recorder.bac_rec_activated()
+        elif (stop_bac_rec):
+            g.user.recorder.bac_rec_deactivated()
+        
+        print("user: ",user.bac_rec_enabled, user.bac_rec_time, user.recorder.bac_rec_time)
+
+        return jsonify({"success": True, "bac_rec_enabled": bac_rec_enabled, "bac_rec_time": bac_rec_time})
+
+    except Exception as error:
+        print("Error modifying backward recording:", error)
+        return jsonify({"error": str(error)}), 500 
