@@ -75,11 +75,11 @@ def modifyBackRecording():
             stop_bac_rec = True
 
         user.bac_rec_enabled = bac_rec_enabled
-        user.bac_rec_time = bac_rec_time
+        user.bac_rec_time = int(bac_rec_time)
         user.recorder.bac_rec_enabled = bac_rec_enabled
-        user.recorder.bac_rec_time = bac_rec_time
+        user.recorder.bac_rec_time = int(bac_rec_time)
         user.save_user_state()
-        
+
         if (start_bac_rec):
             g.user.recorder.bac_rec_activated()
         elif (stop_bac_rec):
