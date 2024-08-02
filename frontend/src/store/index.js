@@ -5,6 +5,8 @@ const store = createStore({
   state: {
     libraries_paths: [],
     libraries_names: [],
+    bac_rec_enabled: false,
+    bac_rec_time: 1,
   },
 
   actions: {
@@ -52,6 +54,50 @@ const store = createStore({
           console.error("Error removing library path", error);
         });
     },
+
+    fetchBackwardRecordingInfos({ commit }) {
+      return new Promise((resolve, reject) => {
+        axios.get("http://127.0.0.1:5000/getBacRecInfos").then(
+          (response) => {
+            console.log(response);
+            const { bac_rec_enabled, bac_rec_time } = response.data;
+            console.log({ bac_rec_enabled, bac_rec_time });
+            commit("setBackwardRecordingInfos", {
+              bac_rec_enabled,
+              bac_rec_time,
+            });
+            resolve(response);
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+      });
+    },
+
+    modifyBackwardRecordingInfos({ dispatch }, payload) {
+      axios
+        .post(
+          "http://127.0.0.1:5000/modifyBackRecording",
+          {
+            // bac_rec_enabled: payload.bac_rec_enabled,
+            // bac_rec_time: payload.new_bac_rec_time,
+            payload,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          dispatch("fetchBackwardRecordingInfos");
+        })
+        .catch((error) => {
+          console.error("Error activating backward Recording", error);
+        });
+    },
   },
 
   mutations: {
@@ -59,6 +105,11 @@ const store = createStore({
       console.log("Commiting setLibraries");
       state.libraries_paths = libraries_paths;
       state.libraries_names = libraries_names;
+    },
+    setBackwardRecordingInfos(state, { bac_rec_enabled, bac_rec_time }) {
+      console.log("Commiting bacRec infos");
+      state.bac_rec_enabled = bac_rec_enabled;
+      state.bac_rec_time = bac_rec_time;
     },
   },
 });

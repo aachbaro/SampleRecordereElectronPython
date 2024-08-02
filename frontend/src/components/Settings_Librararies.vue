@@ -34,7 +34,7 @@
 export default {
   name: "SettingsLibrariesList",
   data: () => ({
-    showList: true,
+    showList: false,
   }),
   computed: {
     libraries_paths() {
