@@ -67,7 +67,7 @@ export default {
       axios
         .post("http://127.0.0.1:5000/recordButtonClicked", {
           path: this.libraries_paths[this.selected_library_path],
-          // retroTime: this.selected_bac_rec_time
+          retroTime: this.selected_bac_rec_time
         })
         .then((response) => {
           console.log("Record Button clicked");
