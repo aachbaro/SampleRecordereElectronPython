@@ -18,7 +18,6 @@ def selectFolderPath():
     try:
         print("add library")
         path = request.get_data().decode('utf-8')
-        # g.user.recorder.set_folder_path(path)
         response = g.user.add_library(path)
         print(path)
 
