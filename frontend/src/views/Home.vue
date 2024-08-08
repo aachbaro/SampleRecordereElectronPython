@@ -1,6 +1,6 @@
 <template>
-  <v-container>
-    <v-col class="mb-4">
+  <div class="entireHome">
+    <div class="windows">
       <v-tabs v-model="tab">
         <v-tab value="Libraries">Libraries</v-tab>
         <v-tab value="Settings">Settings</v-tab>
@@ -13,12 +13,16 @@
           <settings-component />
         </v-tabs-window-item>
       </v-tabs-window>
-    </v-col>
-  </v-container>
+    </div>
+    <div class="recordHistory">
+      <record-history />
+    </div>
+  </div>
 </template>
 
 <script>
 import SampleLibrary from "../components/FileViewer.vue";
+import RecordHistory from "../components/RecordHistory.vue";
 import SettingsComponent from "../components/Settings.vue";
 
 export default {
@@ -26,6 +30,7 @@ export default {
   components: {
     SampleLibrary,
     SettingsComponent,
+    RecordHistory,
   },
   data: () => ({
     tab: null,
@@ -33,4 +38,20 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+
+.entireHome {
+  display: flex;
+  width: 100%;
+}
+
+.windows {
+  width: 70%;
+}
+
+.recordHistory {
+  width: 30%;
+  height: 100%;
+}
+
+</style>

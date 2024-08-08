@@ -84,6 +84,7 @@ ipcMain.on("update-bac_rec", () => {
   recordWidgetWindow.webContents.send("bac_rec-updated");
 });
 
+
 ipcMain.on("select-folder-path", async (event, message) => {
   console.log("Message reçu depuis SelectFolderPath:", message);
   const result = dialog
@@ -119,6 +120,20 @@ ipcMain.on("end-resize", () => {
     recordWidgetWindowIsExtended = false;
   }
 });
+
+ipcMain.on("message", async (event, message) => {
+  console.log('message:', message)
+});
+
+ipcMain.on("new_sample_recorded", (event, message) => {
+  console.log("new sample recorded:", message)
+  if (win) {
+    win.webContents.send("update-notifications", message);
+  }
+});
+
+
+
 
 // Quit when all windows are closed.
 

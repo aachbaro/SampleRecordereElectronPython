@@ -2,7 +2,6 @@
   <v-container>
     <v-card class="mx-auto" width="100%" max-width="600" color="#e8eddf">
       <v-toolbar title="Samples"> </v-toolbar>
-      librariesPaths: {{ libraries_paths }} 
     </v-card>
   </v-container>
 </template>

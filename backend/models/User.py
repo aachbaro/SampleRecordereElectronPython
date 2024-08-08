@@ -17,15 +17,15 @@ class User:
         self.bac_rec_time = 0
         self.load_user_state()
         self.save_user_state()
+        self.sample_history = self.load_sample_history()
         self.recorder = Recorder(self.bac_rec_enabled, self.bac_rec_time)
-        print(self.bac_rec_enabled, self.bac_rec_time)
+        print(f"sample history: {self.sample_history}")
 
     def init_user_libraries(self):
         try:
             with open("folder_path.pkl", "rb") as file:
                 print("init_user_library(): Selecting folder path")
                 folder_paths = pickle.load(file)
-                print("Loaded paths:", folder_paths)
                 return [SampleBank(Path(path)) for path in folder_paths]
         except FileNotFoundError:
             print("init_user_library: No folder selected")
@@ -74,7 +74,52 @@ class User:
             print("Remove library:", error)
             return f"There was an error removing {library_to_remove}: {error}"
 
-    
+
+
+
+    def load_sample_history(self):
+        try:
+            with open("sample_history.pkl", "rb") as file:
+                print("Loading sample history")
+                return pickle.load(file)
+        except FileNotFoundError:
+            print("No sample history found")
+            return []
+
+    def save_sample_history(self):
+        try:
+            with open("sample_history.pkl", "wb") as file:
+                pickle.dump(self.sample_history, file)
+            print("Sample history saved successfully")
+        except Exception as e:
+            print(f"Error saving sample history: {e}")
+
+    def add_sample_history(self, sample_data):
+        try:
+            print("Adding sample to history")
+            self.sample_history.append(sample_data)
+            self.save_sample_history()
+            return "Sample added to history successfully"
+        except Exception as e:
+            print(f"Error adding sample to history: {e}")
+            return f"Error: {e}"
+
+    def delete_sample_from_history(self, file_path: str):
+        try:
+            print(f"Attempting to delete sample from history: {file_path}")
+            initial_length = len(self.sample_history)
+            self.sample_history = [sample for sample in self.sample_history if sample.get('filename') != file_path]
+            
+            if len(self.sample_history) < initial_length:
+                self.save_sample_history()
+                print(f"Sample with filePath {file_path} deleted successfully")
+                return f"Sample with filePath {file_path} deleted successfully"
+            else:
+                print(f"No sample found with filePath {file_path}")
+                return f"No sample found with filePath {file_path}"
+        except Exception as e:
+            print(f"Error deleting sample from history: {e}")
+            return f"Error: {e}"
 
 
 

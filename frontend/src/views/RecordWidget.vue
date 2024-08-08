@@ -71,8 +71,15 @@ export default {
         })
         .then((response) => {
           console.log("Record Button clicked");
-          this.isRecording = response.data;
-          this.$emit("file-uploaded");
+          this.isRecording = response.data[0];
+          console.log(response)
+          if (response.data[1]) {
+            console.log(response.data[1].filename)
+          }
+          if (!this.isRecording && response.data[1]) {
+            console.log("sending new record to home")
+            window.ipcRenderer.send("new_sample_recorded", response.data[1]);
+          }
         })
         .catch((error) => {
           console.error("Error managing record state", error);

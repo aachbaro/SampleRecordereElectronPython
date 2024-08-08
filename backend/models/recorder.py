@@ -155,6 +155,10 @@ class Recorder:
             "length": length,
         }
         return recording_info
+    
+    def last_record_data_zero(self):
+        self.last_audio_recorded_frames.clear()
+        self.last_audio_recorded_name = None
 
     def get_is_recording(self):
         return self.is_recording

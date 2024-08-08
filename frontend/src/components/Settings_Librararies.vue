@@ -67,11 +67,7 @@ export default {
       console.log("Dossiers sélectionnés :", filePaths);
       this.$store.dispatch("addLibraryPath", filePaths);
     });
-
-    // window.ipcRenderer.receive("libraries-updated", () => {
-    //   console.log("receiving libraries-updadted")
-    //   this.$store.dispatch("fetchLibrariesPaths");
-    // });
+    
   },
 };
 </script>

@@ -1,7 +1,7 @@
 <!-- frontend/src/App.vue -->
 
 <template>
-  <v-app>
+  <v-app class="entireApp">
     <router-view class="routerView"></router-view>
   </v-app>
 </template>
@@ -21,5 +21,9 @@ export default {
 
 .routerView {
   background-color: black;
+}
+
+.entireApp {
+  height: 100%;
 }
 </style>

@@ -13,6 +13,10 @@ def welcome():
 def ping():
     return "pong", 200
 
+
+
+
+
 @main_bp.route('/selectSaveFolder', methods=['POST'])
 def selectFolderPath():
     try:
@@ -47,7 +51,10 @@ def removeLibraryPath():
         print("remove library path:", error)
         return str(error), 500
 
-    
+
+
+
+
 @main_bp.route('/getBacRecInfos', methods=['GET'])
 def sendBackRecInfos():
     try:
@@ -90,4 +97,13 @@ def modifyBackRecording():
 
     except Exception as error:
         print("Error modifying backward recording:", error)
-        return jsonify({"error": str(error)}), 500 
+        return jsonify({"error": str(error)}), 500
+    
+
+@main_bp.route('/getSampleHistory', methods=['GET'])
+def sendSampleHistory():
+    try:
+        print("sendSampleHistory:", g.user.sample_history)
+        return jsonify(g.user.sample_history)
+    except Exception as error:
+        print("sendLibrariesPath:", error)

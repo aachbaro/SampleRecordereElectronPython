@@ -5,8 +5,11 @@ const store = createStore({
   state: {
     libraries_paths: [],
     libraries_names: [],
+
     bac_rec_enabled: false,
     bac_rec_time: 1,
+
+    notifications: [],
   },
 
   actions: {
@@ -61,7 +64,7 @@ const store = createStore({
           (response) => {
             console.log(response);
             const { bac_rec_enabled, bac_rec_time } = response.data;
-            console.log({ bac_rec_enabled, bac_rec_time });
+            // console.log({ bac_rec_enabled, bac_rec_time });
             commit("setBackwardRecordingInfos", {
               bac_rec_enabled,
               bac_rec_time,
@@ -80,8 +83,6 @@ const store = createStore({
         .post(
           "http://127.0.0.1:5000/modifyBackRecording",
           {
-            // bac_rec_enabled: payload.bac_rec_enabled,
-            // bac_rec_time: payload.new_bac_rec_time,
             payload,
           },
           {
@@ -99,6 +100,24 @@ const store = createStore({
           console.error("Error activating backward Recording", error);
         });
     },
+
+    addNotification({ commit }, recordData) {
+      console.log(recordData);
+      commit("commitNotification", recordData);
+    },
+
+    fetchSampleHistory({ commit }) {
+      axios
+        .get("http://127.0.0.1:5000/getSampleHistory")
+        .then((response) => {
+          console.log("fetchSampleHistory")
+          console.log(response)
+          commit("setSampleHistory", response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching sample history", error);
+        });
+    },
   },
 
   mutations: {
@@ -111,6 +130,15 @@ const store = createStore({
       console.log("Commiting bacRec infos");
       state.bac_rec_enabled = bac_rec_enabled;
       state.bac_rec_time = bac_rec_time;
+    },
+    commitNotification(state, recordData) {
+      console.log("adding notification", recordData);
+      state.notifications.push(recordData);
+      console.log(state.notifications);
+    },
+    setSampleHistory(state, sampleHistory) {
+      console.log("Initializing notifications with sample history", sampleHistory);
+      state.notifications = sampleHistory;
     },
   },
 });
